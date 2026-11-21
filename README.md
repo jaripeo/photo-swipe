@@ -1,50 +1,48 @@
-# Welcome to your Expo app 👋
+# SwipeClean
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+SwipeClean helps you review and clean up photos and videos on your phone.
 
-## Get started
+## Features and controls
 
-1. Install dependencies
+- Browse by month, date range, random selection, or file size.
+- Swipe left to add an item to Trash.
+- Swipe right to keep an item.
+- Tap a photo to open it and zoom in.
+- Review queued items before deleting them.
+- Use the heart button to save favorites inside the app.
 
-   ```bash
-   npm install
-   ```
+## Requirements
 
-2. Start the app
+- Node.js and npm
+- Expo SDK 58
+- Expo Go with SDK 58 for phone testing
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Install and start
 
 ```bash
-npm run reset-project
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+If your phone cannot connect over Wi-Fi:
 
-## Learn more
+```bash
+npx expo start --tunnel
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+## Photo permissions
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+SwipeClean needs full photo-library access to display and delete photos and videos.
 
-## Join the community
+Items stay in SwipeClean's Trash until you review and delete them.
 
-Join our community of developers creating universal apps.
+## Test with Expo Go
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+1. Install Expo Go on your phone.
+2. Connect your phone and computer to the same Wi-Fi network.
+3. Run `npx expo start`.
+4. Scan the QR code with your phone.
+
+## Privacy
+
+Your photos and videos stay on your device. SwipeClean does not upload them to a server.
