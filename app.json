@@ -7,7 +7,6 @@
     "icon": "./assets/images/icon.png",
     "scheme": "swipeclean",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },
@@ -18,7 +17,6 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
     "web": {
@@ -37,6 +35,14 @@
           "dark": {
             "backgroundColor": "#000000"
           }
+        }
+      ],
+      "expo-video",
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow SwipeClean to access your photos and videos so you can review and clean up your library.",
+          "savePhotosPermission": "Allow SwipeClean to save photos and videos to your library."
         }
       ]
     ],

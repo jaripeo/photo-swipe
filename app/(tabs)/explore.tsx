@@ -1,112 +1,127 @@
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+} from 'react-native';
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import type { Asset } from 'expo-media-library/legacy';
+import { useTrash } from '@/contexts/TrashContext';
+import { useMediaLibraryContext } from '@/contexts/MediaLibraryContext';
 
-import { Collapsible } from '@/components/ui/collapsible';
-import { ExternalLink } from '@/components/external-link';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Fonts } from '@/constants/theme';
+export default function TrashScreen() {
+  const { queue, removeFromTrash, clearTrash } = useTrash();
+  const { deleteAssets } = useMediaLibraryContext();
 
-export default function TabTwoScreen() {
+  const handleEmptyTrash = async () => {
+    if (queue.length === 0) return;
+    // deleteAssetsAsync triggers the native iOS confirmation prompt automatically
+    const success = await deleteAssets(queue);
+    if (success) clearTrash();
+  };
+
+  if (queue.length === 0) {
+    return (
+      <SafeAreaView style={styles.centered}>
+        <Text style={styles.emptyIcon}>🗑</Text>
+        <Text style={styles.emptyTitle}>Trash is empty</Text>
+        <Text style={styles.emptySub}>
+          Photos you delete while swiping will appear here for review before
+          permanently deleting.
+        </Text>
+      </SafeAreaView>
+    );
+  }
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText
-          type="title"
-          style={{
-            fontFamily: Fonts.rounded,
-          }}>
-          Explore
-        </ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image
-          source={require('@/assets/images/react-logo.png')}
-          style={{ width: 100, height: 100, alignSelf: 'center' }}
-        />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful{' '}
-          <ThemedText type="defaultSemiBold" style={{ fontFamily: Fonts.mono }}>
-            react-native-reanimated
-          </ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.heading}>Trash</Text>
+        <Text style={styles.subheading}>{queue.length} photos queued</Text>
+      </View>
+
+      <FlatList<Asset>
+        data={queue}
+        keyExtractor={(item) => item.id}
+        numColumns={3}
+        contentContainerStyle={styles.grid}
+        renderItem={({ item }) => (
+          <View style={styles.thumbWrap}>
+            <Image source={{ uri: item.uri }} style={styles.thumb} />
+            <TouchableOpacity
+              style={styles.removeBtn}
+              onPress={() => removeFromTrash(item.id)}
+              hitSlop={8}
+            >
+              <Text style={styles.removeBtnText}>✕</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      />
+
+      <TouchableOpacity
+        style={styles.emptyBtn}
+        onPress={handleEmptyTrash}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.emptyBtnText}>Empty Trash ({queue.length})</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
+  centered: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#0f0f0f',
+    padding: 32,
+  },
+  container: { flex: 1, backgroundColor: '#0f0f0f' },
+
+  emptyIcon: { fontSize: 56, marginBottom: 16 },
+  emptyTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#fff',
+    marginBottom: 10,
+  },
+  emptySub: {
+    fontSize: 15,
+    color: '#888',
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+
+  header: { paddingHorizontal: 16, paddingTop: 20, paddingBottom: 12 },
+  heading: { color: '#fff', fontSize: 26, fontWeight: '800' },
+  subheading: { color: '#888', fontSize: 14, marginTop: 3 },
+
+  grid: { paddingHorizontal: 8, paddingBottom: 16 },
+  thumbWrap: { flex: 1 / 3, aspectRatio: 1, padding: 2 },
+  thumb: { flex: 1, width: '100%', height: '100%', borderRadius: 10, backgroundColor: '#1a1a1a' },
+  removeBtn: {
     position: 'absolute',
+    top: 7,
+    right: 7,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: 'rgba(0,0,0,0.72)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
+  removeBtnText: { color: '#fff', fontSize: 10, fontWeight: '800' },
+
+  emptyBtn: {
+    margin: 16,
+    backgroundColor: '#f87171',
+    borderRadius: 16,
+    paddingVertical: 18,
+    alignItems: 'center',
   },
+  emptyBtnText: { color: '#fff', fontSize: 17, fontWeight: '700' },
 });
